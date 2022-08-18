@@ -1,25 +1,33 @@
-import logo from './logo.svg';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
+import Jokes from './components/Jokes';
+import SelectBox from './components/UI/SelectBox';
+
+
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const syth = window.speechSynthesis
+  const [voices, setVoices] = useState(syth.getVoices())
+  const [voice, setVoice] = useState({})
+  const onChangeHandler = (e) => {
+    const el = voices.find((vo => vo.name === e.target.value))
+    console.log(el)
+    setVoice(el)
+  }
+
+  const populateVoices = useCallback(() => {
+    setVoices(syth.getVoices())
+  }, [])
+
+  useEffect(() => {
+    populateVoices()
+    setVoice(voices[0])
+  }, [populateVoices])
+  return <>
+    {voices && <SelectBox options={voices} onChange={onChangeHandler} />}
+    <Jokes speechSynth={syth} voice={voice} />
+  </>
 }
 
 export default App;
